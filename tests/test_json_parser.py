@@ -1,6 +1,6 @@
 import pytest
 
-from dataclass_config.parsers import JsonParser
+from helloconfig.parsers import JsonParser
 
 
 DATA_STR = """{

@@ -1,6 +1,6 @@
 import pytest
 
-from dataclass_config.parsers import IniParser
+from helloconfig.parsers import IniParser
 
 
 DATA_STR = """
@@ -29,8 +29,3 @@ def test_dumping():
     dump_result = IniParser().update_config('', DATA_OBJ)
 
     assert dump_result == DATA_STR
-
-    assert JsonParser().update_config(
-        '{ "abc": 12 }',
-        {'hello': 'world'}
-    ) == '{\n    "abc": 12,\n    "hello": "world"\n}'

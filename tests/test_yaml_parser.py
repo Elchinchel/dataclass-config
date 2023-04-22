@@ -1,6 +1,6 @@
 import pytest
 
-from dataclass_config.parsers import YamlParser
+from helloconfig.parsers import YamlParser
 
 
 DATA_STR_LIST = """LIST:\n- 1\n- 2\n- 3\n"""

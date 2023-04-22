@@ -1,4 +1,4 @@
-from dataclass_config import PythonConfig
+from helloconfig import PythonConfig
 
 
 class Config(PythonConfig):

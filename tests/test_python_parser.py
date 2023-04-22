@@ -1,6 +1,11 @@
 import pytest
 
-from dataclass_config.parsers import PythonParser
+from os import remove
+from tempfile import mktemp
+from dataclasses import dataclass, field
+
+from helloconfig import PythonConfig, FieldsMissing
+from helloconfig.parsers import PythonParser
 
 
 DATA_STR = \
@@ -11,7 +16,10 @@ FLOAT = 0.2
 
 STRING = 'STRING'
 
-OBJECT = {123: 'hello', 'hello': 'nope'}
+OBJECT = {
+    123: 'hello',
+    'hello': 'nope',
+}
 
 TUPLE = (1, 2, 3)
 
@@ -32,6 +40,25 @@ DATA_OBJ = {
     "LIST": [1, 2, 3],
     "SET": {1, 2, 3}
 }
+
+
+class NestedConfig(PythonConfig):
+    value: str
+
+    class some_obj:
+        hello: str
+
+        @dataclass
+        class some_another_obj:
+            hello: str
+
+            are_you_okay: dict = field(default_factory=lambda: ({
+                'hello': 'WHY SO MANY GREETINGS THERE',
+                123: 321
+            }))
+
+            class somebody_didnt_read_readme_obj(PythonConfig):
+                still_hello: str
 
 
 def test_parsing():
@@ -57,6 +84,22 @@ def test_dumping():
         'abc = 12  # Comment',
         {'hello': 'world'}
     ) == 'abc = 12  # Comment\n\nhello = \'world\''
+
+
+def test_nested_dumping():
+    filename = mktemp()
+
+    with pytest.raises(FieldsMissing):
+        NestedConfig.from_file(filename)
+
+    with open(filename, encoding='utf-8') as file:
+        data_written = file.read()
+        print(data_written)
+
+    try:
+        config = NestedConfig.from_file(filename)
+    finally:
+        remove(filename)
 
 
 def test_not_supported_features():

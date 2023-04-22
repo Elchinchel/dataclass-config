@@ -5,8 +5,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from dataclass_config.exceptions import FieldsMissing
-from dataclass_config.config_bases import PythonConfig
+from helloconfig.exceptions import FieldsMissing
+from helloconfig.config_bases import PythonConfig
 
 
 class Config(PythonConfig):

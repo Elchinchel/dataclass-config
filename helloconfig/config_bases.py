@@ -4,8 +4,8 @@ from dataclasses import is_dataclass, dataclass, fields, MISSING
 
 from dataclass_factory import Factory
 
-from dataclass_config.exceptions import FieldsMissing
-from dataclass_config.parsers import (
+from helloconfig.exceptions import FieldsMissing
+from helloconfig.parsers import (
     AbstractParser,
     PythonParser,
     JsonParser,
@@ -20,6 +20,10 @@ def get_required_fields(data_cls):
         if field.default is MISSING and field.default_factory is MISSING:
             result[field.name] = field.type
     return result
+
+
+def get_all_fields(data_cls):
+    return {f.name: f for f in fields(data_cls)}
 
 
 def try_delattr(obj, name):
@@ -40,8 +44,8 @@ class ConfigBaseMeta(type):
                 if issubclass(f_value, ConfigBase):
                     nested_cls = f_value._dataclass
 
-                    # with existing following attributes dataclass constructor
-                    # will raise exception when try to overwrite them
+                    # if following attributes exists
+                    # dataclass constructor will raise exception
                     delattr(nested_cls, '__setattr__')
                     delattr(nested_cls, '__delattr__')
 
@@ -56,8 +60,6 @@ class ConfigBaseMeta(type):
                 #  dataclass constructor with old args (we updated them above))
                 try_delattr(nested_cls, '__init__')
                 annotations[f_name] = dataclass(frozen=True)(nested_cls)
-
-                # delattr(klass, f_name)
 
     def __new__(cls, cls_name, bases, namespace: 'dict[str, Any]'):
         if not bases or bases[0] is ConfigBase:
@@ -126,9 +128,9 @@ class ConfigBase(metaclass=ConfigBaseMeta):
                 raw_config = file.read()
                 raw_obj = parser.parse_string(raw_config)
         except FileNotFoundError:
-            rq_fields = get_required_fields(cls._dataclass)
+            rq_fields = get_all_fields(cls._dataclass)
             default_config = parser.update_config(
-                '', {name: typ() for name, typ in rq_fields.items()}
+                '', {name: field for name, field in rq_fields.items()}
             )
 
             with open(path, 'w', encoding='utf-8') as file:

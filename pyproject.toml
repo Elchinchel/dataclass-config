@@ -1,10 +1,10 @@
 [project]
-name = "dataclass_config"
+name = "helloconfig"
 version = "0.1.0"
 authors = [
   { name="Elchin Sarkarov", email="elchin751@gmail.com" },
 ]
-description = "SSH Forward Daemon"
+description = "Describe config, i'll create it"
 requires-python = ">=3.7"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -17,14 +17,14 @@ dependencies = [ "dataclass_factory", "pyyaml" ]
 readme = "README.md"
 
 [project.urls]
-"Homepage" = "https://github.com/elchinchel/dataclass-config"
-"Bug Tracker" = "https://github.com/elchinchel/dataclass-config/issues"
+"Homepage" = "https://github.com/elchinchel/hello-config"
+"Bug Tracker" = "https://github.com/elchinchel/hello-config/issues"
 
 [project.optional-dependencies]
 test = [ "pytest", "pytest-cov" ]
 
 [tool.setuptools]
-packages = ["dataclass_config"]
+packages = ["helloconfig"]
 
 [build-system]
 requires = ["setuptools>=40.8.0"]

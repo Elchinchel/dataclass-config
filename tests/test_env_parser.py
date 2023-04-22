@@ -1,16 +1,30 @@
 import pytest
 
-from dataclass_config.parsers import EnvParser
+from helloconfig import DotEnvConfig
+from helloconfig.parsers import EnvParser
 
 
 DATA_STR = """
 # strings
 STRING=STRING
+NUMBER=2
 """[1:]
 
 DATA_OBJ = {
     "STRING": "STRING",
+    "NUMBER": "2"
 }
+
+
+class Config(DotEnvConfig):
+    STRING: str
+    NUMBER: int
+
+
+def test_cast():
+    config = Config.from_str(DATA_STR)
+
+    assert isinstance(config.NUMBER, int)
 
 
 def test_parsing():
