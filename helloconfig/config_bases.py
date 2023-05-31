@@ -34,6 +34,16 @@ def try_delattr(obj, name):
 
 
 class ConfigBaseMeta(type):
+    # TODO
+    # нужны валидаторы полей. каким образом:
+    # делается функция обертка для DF.validate, возвращающая
+    # объект который ни с чем нельзя перепутать. метакласс ищет такие
+    # обертки и составляет из них схему. схема привязывается к
+    # конкретному классу рядом с датаклассом.
+    # все внутренние поля, соответственно, тоже должны быть
+    # подклассами ConfigBase. всё, во время парсинга данных
+    # подкладываем в фактори нужную схему и __вроде__ будет работать
+
     @staticmethod
     def wrap_nested_classes(klass: type):
         annotations = getattr(klass, '__annotations__', {})
@@ -136,8 +146,8 @@ class ConfigBase(metaclass=ConfigBaseMeta):
             with open(path, 'w', encoding='utf-8') as file:
                 file.write(default_config)
 
-            raise FieldsMissing('Config file at {path!r} not found. '
-                                'New file with empty values created.') from None
+            raise FieldsMissing(f'Config file at {path!r} not found. '
+                                 'New file with empty values created.') from None
 
         try:
             return cls.from_obj(raw_obj)

@@ -1,5 +1,4 @@
 from os import remove
-from textwrap import dedent
 from tempfile import NamedTemporaryFile, mktemp
 from dataclasses import dataclass
 

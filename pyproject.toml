@@ -1,11 +1,11 @@
 [project]
 name = "helloconfig"
-version = "0.1.0"
+version = "0.2.0.dev1"
 authors = [
   { name="Elchin Sarkarov", email="elchin751@gmail.com" },
 ]
 description = "Describe config, i'll create it"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python :: 3",
@@ -13,7 +13,7 @@ classifiers = [
   "Operating System :: POSIX",
   "Operating System :: Microsoft :: Windows",
 ]
-dependencies = [ "dataclass_factory", "pyyaml" ]
+dependencies = [ "dataclass_factory", "pyyaml", "libcst" ]
 readme = "README.md"
 
 [project.urls]

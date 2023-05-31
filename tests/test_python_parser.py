@@ -1,7 +1,5 @@
 import pytest
 
-from os import remove
-from tempfile import mktemp
 from dataclasses import dataclass, field
 
 from helloconfig import PythonConfig, FieldsMissing
@@ -40,6 +38,26 @@ DATA_OBJ = {
     "LIST": [1, 2, 3],
     "SET": {1, 2, 3}
 }
+
+
+NESTED_DATA_STR = '''
+value = 'a'
+
+class some_obj:
+    hello = 'b'
+
+    @dataclass
+    class some_another_obj:
+        hello = 'c'
+
+        are_you_okay = {
+            'hello': 'WHY SO MANY GREETINGS THERE',
+            123: 321
+        }
+
+        class somebody_didnt_read_readme_obj(PythonConfig):
+            still_hello = 'd'
+'''
 
 
 class NestedConfig(PythonConfig):
@@ -86,20 +104,61 @@ def test_dumping():
     ) == 'abc = 12  # Comment\n\nhello = \'world\''
 
 
-def test_nested_dumping():
-    filename = mktemp()
-
+def test_nested_dumping(tmp_filename):
     with pytest.raises(FieldsMissing):
-        NestedConfig.from_file(filename)
+        NestedConfig.from_file(tmp_filename)
 
-    with open(filename, encoding='utf-8') as file:
+    with open(tmp_filename, encoding='utf-8') as file:
         data_written = file.read()
         print(data_written)
 
-    try:
-        config = NestedConfig.from_file(filename)
-    finally:
-        remove(filename)
+    config = NestedConfig.from_file(tmp_filename)
+
+
+def test_nested_loading():
+    config = NestedConfig.from_str(NESTED_DATA_STR)
+
+    assert config.value == 'a'
+    assert config.some_obj.hello == 'b'
+    assert config.some_obj.some_another_obj.hello == 'c'
+    assert config.some_obj.some_another_obj.somebody_didnt_read_readme_obj.still_hello == 'd'
+
+
+def test_field_update(tmp_filename):
+    class InitialConfig(PythonConfig):
+        a: str
+
+        class nested:
+            b: str
+
+
+    class UpdatedConfig(PythonConfig):
+        a: str
+        a1: int
+
+        class nested:
+            b: str
+            b1: int
+
+            @dataclass
+            class more_nested:
+                c: dict = field(default_factory=lambda: {'hi': 'hello'})
+
+
+    with pytest.raises(FieldsMissing):
+        InitialConfig.from_file(tmp_filename)
+
+    config = InitialConfig.from_file(tmp_filename)
+    assert config.a == str()
+    assert config.nested.b == str()
+
+    with pytest.raises(FieldsMissing):
+        UpdatedConfig.from_file(tmp_filename)
+
+    config = UpdatedConfig.from_file(tmp_filename)
+    assert config.a1 == int()
+    assert config.nested.b1 == int()
+    assert config.nested.more_nested == {'hi': 'hello'}
 
 
 def test_not_supported_features():
